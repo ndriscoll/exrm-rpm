@@ -1,6 +1,6 @@
 # Elixir Release Manager RPM Generator
 
-Adds simple [Red Hat Package Manager](http://en.wikipedia.org/wiki/RPM_Package_Manager) (RPM) generation to the exrm package manager. 
+Adds simple [Red Hat Package Manager](http://en.wikipedia.org/wiki/RPM_Package_Manager) (RPM) generation as a Mix task.
 
 ## Usage
 
@@ -22,16 +22,14 @@ Please visit [exrm](https://github.com/bitwalker/exrm) for additional informatio
 
 ## Getting Started
 
-This project's goal is to make building a rpm for an Elixir release very simple, by adding the rpm features to the exrm project. To get started:
+This project's goal is to make building a rpm for an Elixir release very simple, by adding the rpm features to Mix. To get started:
 
 #### Add exrm_rpm as a dependency to your project
 ```elixir
   defp deps do
-    [{:exrm_rpm, "~> 0.3.3", warn_missing: false}]
+    [{:exrm_rpm, "~> 0.4.0"}]
   end
 ```
-
-Note: The `warn_missing: false` will suppress the `exrm` missing dependency message.
 
 #### Fetch and Compile
 
@@ -40,7 +38,7 @@ Note: The `warn_missing: false` will suppress the `exrm` missing dependency mess
 
 #### Perform a release and build a rpm
 
-- `mix release --rpm`
+- `mix rpm.build`
 
 #### Copy the rpm to your target system and install
 
@@ -82,7 +80,7 @@ Edit your projects `config/config.exs` file
 
 Copy the templates with:
 
-`mix release.rpm.copy.templates`
+`mix rpm.copy.templates`
 
 Now edit the spec template in your favorite text editor
 

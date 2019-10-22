@@ -1,6 +1,7 @@
-defmodule ReleaseManager.Plugin.Rpm do
-  use ReleaseManager.Plugin
-  alias ReleaseManager.Config
+defmodule Mix.Task.Release.Rpm.Build do
+  use Mix.Task
+  
+  import Logger
 
   @_SPEC                "spec"
   @_INIT_FILE           "init_script"
@@ -29,10 +30,9 @@ defmodule ReleaseManager.Plugin.Rpm do
   @_SUMMARY     "{{{SUMMARY}}}"
   @_DESCRIPTION "{{{DESCRIPTION}}}"
 
-  def before_release(_), do: nil
-
-  def after_release(%{rpm: true} = config) do
-    config
+  @impl Mix.Task
+  def run(args) do
+    args
     |> do_config
     |> do_spec
     |> do_init_script
@@ -40,22 +40,11 @@ defmodule ReleaseManager.Plugin.Rpm do
     |> create_rpm
   end
 
-  def after_release(_), do: nil
-  def after_package(_), do: nil
-
-  def after_cleanup(_args) do
-    build_dir = build_dir()
-    if File.exists?(build_dir) do
-      File.rm_rf!(build_dir)
-      debug "Removed rpm build files..."
-    end
-  end
-
   defp build_dir() do
     Mix.Project.build_path() |> Path.join("rpm")
   end
 
-  defp do_config(%Config{name: name, version: version} = config) do
+  defp do_config(%{name: name, version: version} = config) do
     app_name   = "#{name}-#{version}.tar.gz"
     build_dir  = config |> get_config_item(:build_dir,  build_dir())
     build_arch = config |> get_config_item(:build_arch, @_DEFAULT_BUILD_ARCH)
@@ -71,7 +60,7 @@ defmodule ReleaseManager.Plugin.Rpm do
       (for {item, default} <- [
         rpmbuild:        @_RPM_BUILD_TOOL,
         rpmbuild_opts:   @_RPM_BUILD_ARGS,
-        priv_path:       Path.join([__DIR__, "..", "..", "priv"]) |> Path.expand,
+        priv_path:       Path.join([__DIR__, "..", "..", "..", "priv"]) |> Path.expand,
         sources_path:    Path.join([build_dir, "SOURCES", app_name]),
         target_rpm_path: Path.join([File.cwd!, "rel", name, "releases", version, rpm_file_name(name, version, build_arch)]),
         app_tar_path:    Path.join([File.cwd!, "rel", name, app_name]),
